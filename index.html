@@ -6,108 +6,105 @@
 <title>CYBER CORE</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
-  :root{
-    --bg:#0a0e1a; --panel:#121829; --line:#1f2a44; --card:#0e1424;
-    --core:#00f0ff; --magenta:#ff2d95; --gold:#ffc43d;
-    --text:#e8ecf6; --muted:#6c7794; --green:#33e08a;
-  }
+  :root{--bg:#0a0e1a;--panel:#121829;--line:#1f2a44;--card:#0e1424;
+    --core:#00f0ff;--magenta:#ff2d95;--gold:#ffc43d;--text:#e8ecf6;--muted:#6c7794;--green:#33e08a;--gem:#5ad1ff;}
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
   html,body{margin:0;height:100%;overflow:hidden;}
   body{background:radial-gradient(120% 70% at 50% -10%,#16203a 0%,var(--bg) 55%),var(--bg);
     color:var(--text);font-family:'Segoe UI',system-ui,Arial,sans-serif;user-select:none;}
   #app{display:flex;flex-direction:column;height:100dvh;}
 
-  /* header */
-  .head{padding:10px 18px 4px;text-align:center;flex-shrink:0;}
-  .balance{font-size:38px;font-weight:800;letter-spacing:-1px;color:var(--gold);
-    text-shadow:0 0 22px rgba(255,196,61,.35);display:flex;align-items:center;justify-content:center;gap:7px;line-height:1.05;}
-  .balance .coin{font-size:26px;}
-  .sub{display:flex;justify-content:center;gap:14px;font-size:11px;margin-top:3px;}
+  .head{padding:9px 16px 4px;flex-shrink:0;}
+  .topbar{display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:700;margin-bottom:3px;}
+  .topbar .gem{color:var(--gem);} .topbar .sp{color:var(--green);}
+  .balance{font-size:34px;font-weight:800;letter-spacing:-1px;color:var(--gold);
+    text-shadow:0 0 22px rgba(255,196,61,.35);display:flex;align-items:center;justify-content:center;gap:6px;line-height:1.05;}
+  .balance .coin{font-size:23px;}
+  .sub{display:flex;justify-content:center;gap:12px;font-size:11px;margin-top:2px;}
   .sub .rate{color:var(--core);} .sub .lv{color:var(--magenta);}
-  .lvlbar{height:5px;border-radius:3px;background:var(--line);overflow:hidden;margin:7px 18px 0;}
+  .lvlbar{height:5px;border-radius:3px;background:var(--line);overflow:hidden;margin:6px 2px 0;}
   .lvlbar-fill{height:100%;background:linear-gradient(90deg,var(--core),var(--magenta));transition:width .3s;}
 
-  /* views */
-  .views{flex:1;overflow-y:auto;overflow-x:hidden;padding:10px 14px 16px;}
+  .views{flex:1;overflow-y:auto;overflow-x:hidden;padding:10px 13px 16px;}
   .view{display:none;} .view.active{display:block;}
 
-  /* tap view */
-  .stage{display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;padding-top:6px;}
-  .combo{height:22px;font-weight:800;font-size:17px;color:var(--magenta);text-shadow:0 0 14px rgba(255,45,149,.6);opacity:0;transition:opacity .2s;}
+  .stage{display:flex;flex-direction:column;align-items:center;padding-top:4px;}
+  .combo{height:20px;font-weight:800;font-size:16px;color:var(--magenta);text-shadow:0 0 14px rgba(255,45,149,.6);opacity:0;transition:opacity .2s;}
   .combo.on{opacity:1;}
-  .core-wrap{position:relative;width:210px;height:210px;margin:4px 0 10px;}
+  .core-wrap{position:relative;width:200px;height:200px;margin:4px 0 10px;}
   .core{position:absolute;inset:0;border-radius:50%;
     background:radial-gradient(circle at 38% 32%,#fff8,var(--core) 38%,#0066aa 78%,#022 100%);
     box-shadow:0 0 40px color-mix(in srgb,var(--core) 45%,transparent),inset 0 0 40px rgba(255,255,255,.25);
-    cursor:pointer;border:none;display:flex;align-items:center;justify-content:center;
-    transition:transform .08s,background .4s;animation:pulse 2.6s ease-in-out infinite;}
-  .core:active{transform:scale(.93);}
-  .core .glyph{font-size:82px;filter:drop-shadow(0 0 10px rgba(0,0,0,.4));}
+    cursor:pointer;border:none;display:flex;align-items:center;justify-content:center;transition:transform .08s,background .4s;animation:pulse 2.6s ease-in-out infinite;}
+  .core:active{transform:scale(.93);} .core .glyph{font-size:78px;filter:drop-shadow(0 0 10px rgba(0,0,0,.4));}
+  .core.golden{background:radial-gradient(circle at 38% 32%,#fff,#ffe680 38%,#ff9900 80%);box-shadow:0 0 60px rgba(255,196,61,.8);}
   .ring{position:absolute;inset:-12px;border-radius:50%;border:2px dashed color-mix(in srgb,var(--core) 35%,transparent);animation:spin 14s linear infinite;}
-  .ring.r2{inset:-26px;border-color:rgba(255,45,149,.3);animation-duration:20s;animation-direction:reverse;}
+  .ring.r2{inset:-25px;border-color:rgba(255,45,149,.3);animation-duration:20s;animation-direction:reverse;}
   @keyframes spin{to{transform:rotate(360deg);}}
-  @keyframes pulse{0%,100%{box-shadow:0 0 40px color-mix(in srgb,var(--core) 45%,transparent),inset 0 0 40px rgba(255,255,255,.25);}50%{box-shadow:0 0 72px color-mix(in srgb,var(--core) 70%,transparent),inset 0 0 50px rgba(255,255,255,.35);}}
-  .float{position:absolute;font-weight:800;font-size:22px;color:var(--gold);text-shadow:0 0 12px rgba(255,196,61,.6);pointer-events:none;animation:floatUp .9s ease-out forwards;}
-  @keyframes floatUp{0%{opacity:1;transform:translateY(0) scale(1);}100%{opacity:0;transform:translateY(-65px) scale(1.3);}}
-  .actions{display:flex;gap:10px;margin:4px 0 12px;}
-  .act{flex:1;border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:13px;
-    padding:9px;font-weight:700;font-size:12px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;transition:transform .1s;}
-  .act:active{transform:scale(.95);} .act .ai{font-size:20px;}
-  .act.ready{border-color:var(--gold);box-shadow:0 0 16px rgba(255,196,61,.35);}
+  @keyframes pulse{0%,100%{box-shadow:0 0 40px color-mix(in srgb,var(--core) 45%,transparent),inset 0 0 40px rgba(255,255,255,.25);}50%{box-shadow:0 0 70px color-mix(in srgb,var(--core) 70%,transparent),inset 0 0 50px rgba(255,255,255,.35);}}
+  .float{position:absolute;font-weight:800;font-size:22px;color:var(--gold);text-shadow:0 0 12px rgba(255,196,61,.6);pointer-events:none;animation:fU .9s ease-out forwards;}
+  .float.crit{color:var(--magenta);font-size:30px;text-shadow:0 0 16px rgba(255,45,149,.8);}
+  @keyframes fU{0%{opacity:1;transform:translateY(0) scale(1);}100%{opacity:0;transform:translateY(-65px) scale(1.3);}}
+  .actions{display:flex;gap:9px;margin:2px 0 11px;width:100%;max-width:340px;}
+  .act{flex:1;border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:12px;padding:8px;font-weight:700;font-size:11px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;transition:transform .1s;}
+  .act:active{transform:scale(.95);} .act .ai{font-size:18px;}
+  .act.ready{border-color:var(--gold);box-shadow:0 0 14px rgba(255,196,61,.35);}
   .act:disabled{opacity:.5;cursor:not-allowed;}
-  .energy{width:100%;max-width:330px;}
-  .energy-row{display:flex;justify-content:space-between;align-items:center;font-size:12px;margin-bottom:5px;}
+  .energy{width:100%;max-width:340px;}
+  .energy-row{display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px;}
   .energy-val{color:var(--core);font-weight:700;}
   .bar{height:11px;border-radius:6px;background:var(--line);overflow:hidden;}
   .bar-fill{height:100%;border-radius:6px;background:linear-gradient(90deg,var(--magenta),var(--core));transition:width .2s;}
 
-  /* cards (miners/boosts) */
-  .secttl{font-size:11px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin:4px 2px 9px;}
-  .card{display:flex;align-items:center;gap:11px;background:var(--card);border:1px solid var(--line);
-    border-radius:14px;padding:10px 12px;margin-bottom:8px;}
+  .subtabs{display:flex;gap:6px;margin-bottom:11px;}
+  .subtabs button{flex:1;background:var(--card);border:1px solid var(--line);color:var(--muted);border-radius:10px;padding:7px;font-size:12px;font-weight:700;cursor:pointer;}
+  .subtabs button.on{color:var(--text);border-color:var(--core);background:#10243a;}
+  .subview{display:none;} .subview.active{display:block;}
+
+  .secttl{font-size:11px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin:2px 2px 9px;}
+  .card{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 11px;margin-bottom:8px;}
   .card.locked{opacity:.5;}
-  .card .ico{font-size:25px;width:38px;text-align:center;flex-shrink:0;}
+  .card .ico{font-size:24px;width:36px;text-align:center;flex-shrink:0;}
   .card .info{flex:1;min-width:0;}
   .card .name{font-weight:700;font-size:14px;}
   .card .desc{font-size:11px;color:var(--muted);margin-top:1px;}
   .card .inc{font-size:11px;color:var(--green);margin-top:1px;}
-  .buy{border:none;border-radius:10px;padding:8px 12px;font-weight:800;font-size:13px;
-    background:linear-gradient(135deg,var(--gold),#ff9900);color:#1a1208;cursor:pointer;white-space:nowrap;transition:transform .1s;flex-shrink:0;}
+  .buy{border:none;border-radius:10px;padding:8px 11px;font-weight:800;font-size:13px;background:linear-gradient(135deg,var(--gold),#ff9900);color:#1a1208;cursor:pointer;white-space:nowrap;transition:transform .1s;flex-shrink:0;}
   .buy:active{transform:scale(.94);}
+  .buy.gem{background:linear-gradient(135deg,var(--gem),#2a8fd4);color:#022;}
+  .buy.sp{background:linear-gradient(135deg,var(--green),#1fae66);color:#052;}
   .buy:disabled{background:#222b40;color:var(--muted);cursor:not-allowed;}
   .buy .lvl{display:block;font-size:9px;opacity:.7;font-weight:600;}
+  .buy.own{background:#10243a;color:var(--core);border:1px solid var(--core);}
+  .buy.sel{background:var(--core);color:#022;}
 
-  /* tasks */
-  .task{display:flex;align-items:center;gap:11px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:11px 12px;margin-bottom:8px;}
+  .task{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:11px;margin-bottom:8px;}
   .task.done{border-color:var(--green);}
-  .task .ico{font-size:22px;width:34px;text-align:center;}
+  .task .ico{font-size:21px;width:32px;text-align:center;}
   .task .info{flex:1;min-width:0;}
   .task .name{font-weight:700;font-size:13px;}
   .task .rw{font-size:11px;color:var(--gold);margin-top:1px;}
-  .task .st{font-size:11px;font-weight:800;padding:6px 11px;border-radius:9px;white-space:nowrap;}
+  .task .rw.g{color:var(--gem);}
+  .task .st{font-size:11px;font-weight:800;padding:6px 10px;border-radius:9px;white-space:nowrap;}
   .task .st.wait{background:#222b40;color:var(--muted);}
   .task .st.claim{background:linear-gradient(135deg,var(--green),#1fae66);color:#062;cursor:pointer;}
   .task .st.got{color:var(--green);}
 
-  /* profile */
-  .pstat{display:flex;justify-content:space-between;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 14px;margin-bottom:8px;font-size:14px;}
-  .pstat span:first-child{color:var(--muted);}
-  .pstat b{color:var(--text);}
-  .prestige{width:100%;border:none;border-radius:14px;padding:14px;font-weight:800;font-size:15px;margin-top:10px;
-    background:linear-gradient(135deg,var(--magenta),#7a1fff);color:#fff;cursor:pointer;}
-  .prestige:disabled{background:#222b40;color:var(--muted);cursor:not-allowed;}
-  .phint{font-size:11px;color:var(--muted);text-align:center;margin-top:7px;line-height:1.4;}
+  .pstat{display:flex;justify-content:space-between;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 13px;margin-bottom:7px;font-size:14px;}
+  .pstat span:first-child{color:var(--muted);} .pstat b{color:var(--text);}
+  .bigbtn{width:100%;border:none;border-radius:14px;padding:13px;font-weight:800;font-size:14px;margin-top:8px;cursor:pointer;}
+  .bigbtn.pres{background:linear-gradient(135deg,var(--magenta),#7a1fff);color:#fff;}
+  .bigbtn.inv{background:linear-gradient(135deg,var(--core),#0088cc);color:#022;}
+  .bigbtn:disabled{background:#222b40;color:var(--muted);cursor:not-allowed;}
+  .phint{font-size:11px;color:var(--muted);text-align:center;margin-top:7px;line-height:1.45;}
+  .reflink{background:var(--card);border:1px dashed var(--core);border-radius:12px;padding:11px;font-size:12px;color:var(--core);word-break:break-all;margin:8px 0;}
 
-  /* nav */
   .nav{display:flex;background:var(--panel);border-top:1px solid var(--line);flex-shrink:0;padding-bottom:env(safe-area-inset-bottom);}
-  .nav button{flex:1;background:none;border:none;color:var(--muted);padding:9px 2px 11px;font-size:10px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;transition:color .15s;}
-  .nav button .ni{font-size:21px;}
-  .nav button.on{color:var(--core);}
-  .nav button .badge{position:absolute;margin:-4px 0 0 16px;background:var(--magenta);color:#fff;font-size:9px;font-weight:800;border-radius:8px;padding:0 5px;min-width:15px;}
+  .nav button{flex:1;background:none;border:none;color:var(--muted);padding:8px 1px 10px;font-size:9px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;transition:color .15s;position:relative;}
+  .nav button .ni{font-size:19px;} .nav button.on{color:var(--core);}
+  .nav .badge{position:absolute;top:3px;right:50%;margin-right:-20px;background:var(--magenta);color:#fff;font-size:9px;font-weight:800;border-radius:8px;padding:0 5px;min-width:15px;}
 
-  .toast{position:fixed;top:42%;left:50%;transform:translate(-50%,-50%);background:var(--card);border:1px solid var(--gold);
-    border-radius:16px;padding:16px 24px;font-weight:800;font-size:15px;color:var(--gold);z-index:99;white-space:pre-line;
-    box-shadow:0 0 40px rgba(255,196,61,.5);opacity:0;pointer-events:none;transition:opacity .25s;text-align:center;}
+  .toast{position:fixed;top:40%;left:50%;transform:translate(-50%,-50%);background:var(--card);border:1px solid var(--gold);border-radius:16px;padding:15px 22px;font-weight:800;font-size:15px;color:var(--gold);z-index:99;white-space:pre-line;box-shadow:0 0 40px rgba(255,196,61,.5);opacity:0;pointer-events:none;transition:opacity .25s;text-align:center;}
   .toast.on{opacity:1;}
 </style>
 </head>
@@ -115,13 +112,14 @@
 <div id="app">
 
   <div class="head">
+    <div class="topbar"><span class="gem">💎 <span id="gems">0</span></span>
+      <span class="sp">🧬 <span id="sp">0</span></span></div>
     <div class="balance"><span class="coin">🪙</span><span id="balance">0</span></div>
     <div class="sub"><span class="rate" id="rate"></span><span class="lv" id="lvlTag">Ядро v1</span></div>
     <div class="lvlbar"><div class="lvlbar-fill" id="lvlBar"></div></div>
   </div>
 
   <div class="views">
-
     <!-- TAP -->
     <div class="view active" id="v-tap">
       <div class="stage">
@@ -130,54 +128,72 @@
           <div class="ring"></div><div class="ring r2"></div>
           <button class="core" id="core"><span class="glyph" id="glyph">⚛️</span></button>
         </div>
-        <div class="actions" style="width:100%;max-width:330px;">
+        <div class="actions">
           <button class="act" id="boost"><span class="ai">🚀</span><span id="boostTxt">Овердрайв</span></button>
           <button class="act" id="refill"><span class="ai">⚡</span><span id="refillTxt">Заряд</span></button>
         </div>
         <div class="energy">
-          <div class="energy-row"><span>Энергия</span>
-            <span class="energy-val"><span id="energy">100</span> / <span id="maxEnergy">100</span></span></div>
+          <div class="energy-row"><span>Энергия</span><span class="energy-val"><span id="energy">100</span> / <span id="maxEnergy">100</span></span></div>
           <div class="bar"><div class="bar-fill" id="energyBar"></div></div>
         </div>
       </div>
     </div>
 
     <!-- MINERS -->
-    <div class="view" id="v-miners">
-      <div class="secttl">Майнеры · пассивный доход</div>
-      <div id="minerList"></div>
+    <div class="view" id="v-miners"><div class="secttl">Майнеры · пассивный доход</div><div id="minerList"></div></div>
+
+    <!-- UPGRADE (sub: boosts/perks/skins) -->
+    <div class="view" id="v-up">
+      <div class="subtabs">
+        <button class="on" data-su="boosts">Бусты</button>
+        <button data-su="perks">Перки</button>
+        <button data-su="skins">Скины</button>
+      </div>
+      <div class="subview active" id="su-boosts"><div id="boostList"></div></div>
+      <div class="subview" id="su-perks"><div class="secttl">Дерево перков · 🧬 за уровни ядра</div><div id="perkList"></div></div>
+      <div class="subview" id="su-skins"><div class="secttl">Скины ядра · 💎</div><div id="skinList"></div></div>
     </div>
 
-    <!-- BOOSTS -->
-    <div class="view" id="v-boosts">
-      <div class="secttl">Улучшения</div>
-      <div id="boostList"></div>
-    </div>
-
-    <!-- TASKS -->
+    <!-- TASKS (sub: tasks/ach) -->
     <div class="view" id="v-tasks">
-      <div class="secttl">Ежедневный бонус</div>
-      <div id="dailyBox"></div>
-      <div class="secttl" style="margin-top:14px;">Задания</div>
-      <div id="taskList"></div>
+      <div class="subtabs"><button class="on" data-su2="tasks">Задания</button><button data-su2="ach">Ачивки</button></div>
+      <div class="subview active" id="su-tasks">
+        <div class="secttl">Бонусы</div><div id="dailyBox"></div>
+        <div class="secttl" style="margin-top:12px;">Задания</div><div id="taskList"></div>
+      </div>
+      <div class="subview" id="su-ach"><div class="secttl">Достижения · 💎</div><div id="achList"></div></div>
+    </div>
+
+    <!-- FRIENDS -->
+    <div class="view" id="v-friends">
+      <div class="secttl">Приглашай друзей</div>
+      <div class="card"><div class="ico">🤝</div><div class="info">
+        <div class="name">Зови друзей — получай 💎</div>
+        <div class="desc">Друг открывает игру по твоей ссылке и получает бонус 5 000 🪙 на старте</div></div></div>
+      <div class="reflink" id="refLink">Загрузка ссылки…</div>
+      <button class="bigbtn inv" id="copyBtn">📋 Скопировать ссылку</button>
+      <button class="bigbtn inv" id="shareBtn" style="margin-top:7px;background:linear-gradient(135deg,#2aabee,#1c8ad6);">📨 Отправить другу</button>
+      <div class="pstat" style="margin-top:12px;"><span>Приглашено друзей</span><b id="refCount">—</b></div>
+      <div class="phint" id="refHint"></div>
     </div>
 
     <!-- PROFILE -->
     <div class="view" id="v-profile">
-      <div class="secttl">Статистика</div>
-      <div id="profBox"></div>
-      <button class="prestige" id="prestigeBtn">Перезапуск</button>
+      <div class="secttl">Статистика</div><div id="profBox"></div>
+      <button class="bigbtn pres" id="prestigeBtn">Перезапуск</button>
       <div class="phint" id="prestigeHint"></div>
+      <div class="secttl" style="margin-top:16px;">Настройки</div>
+      <button class="bigbtn" id="resetBtn" style="background:#2a1620;color:#ff6b6b;border:1px solid #5a2030;">🗑️ Сбросить весь прогресс</button>
     </div>
-
   </div>
 
   <div class="nav">
     <button class="on" data-v="tap"><span class="ni">🪙</span>Тап</button>
     <button data-v="miners"><span class="ni">⛏️</span>Майнеры</button>
-    <button data-v="boosts"><span class="ni">🚀</span>Бусты</button>
+    <button data-v="up"><span class="ni">🚀</span>Прокачка</button>
     <button data-v="tasks"><span class="ni">✅</span>Задания<span class="badge" id="taskBadge" style="display:none">0</span></button>
-    <button data-v="profile"><span class="ni">👤</span>Профиль</button>
+    <button data-v="friends"><span class="ni">🤝</span>Друзья</button>
+    <button data-v="profile"><span class="ni">👤</span>Я</button>
   </div>
 
   <div class="toast" id="toast"></div>
@@ -187,75 +203,92 @@
   const tg=window.Telegram&&window.Telegram.WebApp;
   if(tg){tg.ready();tg.expand();}
   function haptic(t){try{tg&&tg.HapticFeedback&&tg.HapticFeedback.impactOccurred(t);}catch(e){}}
+  const BOT_USERNAME="MyGamerBot_bot"; // ← поставь сюда @username своего бота без @
 
   const mem={};
   const store={get(k){try{return localStorage.getItem(k);}catch(e){return mem[k]??null;}},
                set(k,v){try{localStorage.setItem(k,v);}catch(e){mem[k]=v;}}};
 
-  // ---- Core evolution ----
   const LEVELS=[
-    {n:'Ядро v1',g:'⚛️',c:'#00f0ff',need:0},
-    {n:'Кварк-ядро',g:'🔮',c:'#a06bff',need:2000},
-    {n:'Плазма',g:'💠',c:'#3aa0ff',need:10000},
-    {n:'Реактор',g:'🌀',c:'#00ffaa',need:50000},
-    {n:'Сверхновая',g:'⭐',c:'#ffc43d',need:250000},
-    {n:'Пульсар',g:'🌟',c:'#ff7a00',need:1e6},
-    {n:'Квазар',g:'💫',c:'#ff2d95',need:5e6},
-    {n:'Чёрная дыра',g:'🕳️',c:'#8a5cff',need:25e6},
+    {n:'Ядро v1',g:'⚛️',c:'#00f0ff',need:0},{n:'Кварк-ядро',g:'🔮',c:'#a06bff',need:2000},
+    {n:'Плазма',g:'💠',c:'#3aa0ff',need:10000},{n:'Реактор',g:'🌀',c:'#00ffaa',need:50000},
+    {n:'Сверхновая',g:'⭐',c:'#ffc43d',need:250000},{n:'Пульсар',g:'🌟',c:'#ff7a00',need:1e6},
+    {n:'Квазар',g:'💫',c:'#ff2d95',need:5e6},{n:'Чёрная дыра',g:'🕳️',c:'#8a5cff',need:25e6},
     {n:'Сингулярность',g:'🌌',c:'#00ffe0',need:1e8},
   ];
-
-  // ---- Miners (passive) — мягкий рост цены 1.13 ----
   const MINERS=[
-    {id:'chip', ico:'💾',name:'Дата-чип',     base:30,    inc:1,     unlock:0},
-    {id:'rig',  ico:'🖥️',name:'Майнинг-риг',  base:250,   inc:6,     unlock:200},
-    {id:'srv',  ico:'🗄️',name:'Сервер',        base:1500,  inc:30,    unlock:1500},
-    {id:'sat',  ico:'🛰️',name:'Спутник',       base:9000,  inc:160,   unlock:9000},
-    {id:'ai',   ico:'🤖',name:'ИИ-кластер',    base:50000, inc:850,   unlock:50000},
-    {id:'nano', ico:'⚙️',name:'Нанофабрика',   base:300000,inc:5000,  unlock:300000},
-    {id:'qnet', ico:'🌐',name:'Квантовая сеть',base:18e5,  inc:30000, unlock:18e5},
-    {id:'dyson',ico:'☀️',name:'Дайсон-сфера',  base:12e6,  inc:180000,unlock:12e6},
+    {id:'chip',ico:'💾',name:'Дата-чип',base:30,inc:1,unlock:0},
+    {id:'rig',ico:'🖥️',name:'Майнинг-риг',base:250,inc:6,unlock:200},
+    {id:'srv',ico:'🗄️',name:'Сервер',base:1500,inc:30,unlock:1500},
+    {id:'sat',ico:'🛰️',name:'Спутник',base:9000,inc:160,unlock:9000},
+    {id:'ai',ico:'🤖',name:'ИИ-кластер',base:50000,inc:850,unlock:50000},
+    {id:'nano',ico:'⚙️',name:'Нанофабрика',base:300000,inc:5000,unlock:300000},
+    {id:'qnet',ico:'🌐',name:'Квантовая сеть',base:18e5,inc:30000,unlock:18e5},
+    {id:'dyson',ico:'☀️',name:'Дайсон-сфера',base:12e6,inc:180000,unlock:12e6},
   ];
-  const MINER_GROWTH=1.13;
-
-  // ---- Boost upgrades — рост 1.15 / множитель дешевле ----
+  const MG=1.13;
   const BOOSTS=[
-    {id:'tap', ico:'👆',name:'Сила тапа',   desc:'+1 к монетам за тап',     base:25,  growth:1.15},
-    {id:'mult',ico:'✖️',name:'Множитель',   desc:'+10% ко всему доходу',     base:300, growth:1.25},
-    {id:'cap', ico:'🔋',name:'Ёмкость',     desc:'+250 к макс. энергии',     base:120, growth:1.18},
-    {id:'rgn', ico:'♻️',name:'Реген',       desc:'+1 к восстановл./сек',     base:200, growth:1.2},
+    {id:'tap',ico:'👆',name:'Сила тапа',desc:'+1 к монетам за тап',base:25,growth:1.15},
+    {id:'mult',ico:'✖️',name:'Множитель',desc:'+10% ко всему доходу',base:300,growth:1.25},
+    {id:'cap',ico:'🔋',name:'Ёмкость',desc:'+250 к макс. энергии',base:120,growth:1.18},
+    {id:'rgn',ico:'♻️',name:'Реген',desc:'+1 к восстановл./сек',base:200,growth:1.2},
   ];
-
+  const PERKS=[
+    {id:'crit',ico:'💥',name:'Криты',desc:'+4% шанс крита x7',max:10},
+    {id:'auto',ico:'🤖',name:'Авто-тап',desc:'+1 авто-тап в секунду',max:10},
+    {id:'greed',ico:'💰',name:'Жадность',desc:'+5% ко всему доходу',max:20},
+    {id:'offline',ico:'🌙',name:'Оффлайн',desc:'+25% к оффлайн-доходу',max:8},
+    {id:'eff',ico:'⚡',name:'КПД энергии',desc:'+2 к регену энергии',max:15},
+  ];
+  const SKINS=[
+    {id:'default',name:'Стандарт',g:'⚛️',c:'#00f0ff',cost:0,bonus:0},
+    {id:'neon',name:'Неон',g:'🟢',c:'#39ff88',cost:8,bonus:0.05},
+    {id:'plasma',name:'Плазма',g:'🔥',c:'#ff5a3c',cost:20,bonus:0.10},
+    {id:'void',name:'Бездна',g:'🟣',c:'#a04bff',cost:45,bonus:0.18},
+    {id:'gold',name:'Золото',g:'👑',c:'#ffc43d',cost:90,bonus:0.30},
+    {id:'rainbow',name:'Радуга',g:'🌈',c:'#ff66cc',cost:200,bonus:0.50},
+  ];
   const TASKS=[
-    {id:'t1',ico:'👆',name:'Сделай 50 тапов',     rw:150,  chk:S=>S.taps>=50},
-    {id:'t2',ico:'🪙',name:'Заработай 1 000',     rw:300,  chk:S=>S.total>=1000},
-    {id:'t3',ico:'⛏️',name:'Открой майнера',      rw:400,  chk:S=>Object.keys(S.miners).length>=1},
-    {id:'t4',ico:'🔮',name:'Прокачай ядро до ур.2',rw:600, chk:S=>S.coreLevel>=1},
-    {id:'t5',ico:'👆',name:'Сделай 500 тапов',    rw:1200, chk:S=>S.taps>=500},
-    {id:'t6',ico:'⚙️',name:'Открой 4 майнера',    rw:5000, chk:S=>Object.keys(S.miners).length>=4},
-    {id:'t7',ico:'📈',name:'Доход 200 / сек',     rw:8000, chk:S=>incomePerSec()>=200},
-    {id:'t8',ico:'🌟',name:'Прокачай ядро до ур.5',rw:50000,chk:S=>S.coreLevel>=4},
+    {id:'t1',ico:'👆',name:'Сделай 50 тапов',rw:150,chk:S=>S.taps>=50},
+    {id:'t2',ico:'🪙',name:'Заработай 1 000',rw:300,chk:S=>S.total>=1000},
+    {id:'t3',ico:'⛏️',name:'Открой майнера',rw:400,chk:S=>Object.keys(S.miners).length>=1},
+    {id:'t4',ico:'🔮',name:'Ядро до ур.2',rw:600,chk:S=>S.coreLevel>=1},
+    {id:'t5',ico:'👆',name:'Сделай 500 тапов',rw:1200,chk:S=>S.taps>=500},
+    {id:'t6',ico:'⚙️',name:'Открой 4 майнера',rw:5000,chk:S=>Object.keys(S.miners).length>=4},
+    {id:'t7',ico:'📈',name:'Доход 200/сек',rw:8000,chk:S=>incomePerSec()>=200},
+    {id:'t8',ico:'🌟',name:'Ядро до ур.5',rw:50000,chk:S=>S.coreLevel>=4},
+  ];
+  const ACH=[
+    {id:'a1',ico:'👆',name:'1 000 тапов',gem:2,chk:S=>S.taps>=1000},
+    {id:'a2',ico:'👆',name:'10 000 тапов',gem:5,chk:S=>S.taps>=10000},
+    {id:'a3',ico:'🪙',name:'Заработать 100K',gem:3,chk:S=>S.total>=1e5},
+    {id:'a4',ico:'🪙',name:'Заработать 10M',gem:8,chk:S=>S.total>=1e7},
+    {id:'a5',ico:'🪙',name:'Заработать 1B',gem:20,chk:S=>S.total>=1e9},
+    {id:'a6',ico:'⛏️',name:'50 уровней майнеров',gem:6,chk:S=>minerLevels()>=50},
+    {id:'a7',ico:'♻️',name:'Первый престиж',gem:15,chk:S=>S.prestige>=1},
+    {id:'a8',ico:'💥',name:'5 престижей',gem:50,chk:S=>S.prestige>=5},
   ];
 
-  const S={
-    score:0,total:0,taps:0,
-    tapPower:1,energy:100,maxEnergy:100,energyRegen:1,
-    coreLevel:0,
-    miners:{},boosts:{tap:0,mult:0,cap:0,rgn:0},
-    tasksClaimed:{},lastDaily:0,dailyStreak:0,
-    prestige:0
-  };
+  const S={score:0,total:0,taps:0,gems:0,sp:0,
+    tapPower:1,energy:100,maxEnergy:100,energyRegen:1,coreLevel:0,
+    miners:{},boosts:{tap:0,mult:0,cap:0,rgn:0},perks:{crit:0,auto:0,greed:0,offline:0,eff:0},
+    skin:'default',ownedSkins:['default'],
+    tasksClaimed:{},achClaimed:{},lastDaily:0,dailyStreak:0,prestige:0,refReward:false};
 
-  let combo=0,lastTap=0,boostEnd=0,boostCd=0,refillCd=0;
+  let combo=0,lastTap=0,boostEnd=0,boostCd=0,refillCd=0,golden=false,goldenEnd=0,nextGolden=Date.now()+45000;
   const BOOST_DUR=15000,BOOST_CD=180000,REFILL_CD=300000,DAY=86400000;
 
-  (function load(){
-    const raw=store.get('cybercore2');if(!raw)return;
+  (function load(){const raw=store.get('cc3');if(!raw)return;
     try{const d=JSON.parse(raw);Object.assign(S,d);
-      if(d.t){const secs=Math.min((Date.now()-d.t)/1000,3*3600);const g=Math.floor(incomePerSec()*secs);S.score+=g;S.total+=g;}
+      if(d.t){const secs=Math.min((Date.now()-d.t)/1000,3*3600);
+        const g=Math.floor(incomePerSec()*(1+S.perks.offline*0.25)*secs);S.score+=g;S.total+=g;}
     }catch(e){}
   })();
-  function save(){store.set('cybercore2',JSON.stringify({...S,t:Date.now()}));}
+  // welcome bonus by referral
+  (function ref(){try{const p=tg&&tg.initDataUnsafe&&tg.initDataUnsafe.start_param;
+    if(p&&p.indexOf('ref_')===0&&!S.refReward){S.refReward=true;S.score+=5000;S.total+=5000;
+      setTimeout(()=>showToast('🎁 Бонус новичка\n+5 000 🪙'),600);}}catch(e){}})();
+  function save(){store.set('cc3',JSON.stringify({...S,t:Date.now()}));}
 
   const $=id=>document.getElementById(id);
   function fmt(n){n=Math.floor(n);if(n<1000)return n;
@@ -263,176 +296,176 @@
     if(i>=s.length)return n.toExponential(2);
     return (n/Math.pow(1000,i)).toFixed(2).replace(/\.?0+$/,'')+s[i];}
 
-  function globalMult(){return (1+S.boosts.mult*0.10)*(1+S.coreLevel*0.15)*(1+S.prestige*0.10);}
+  function skinBonus(){const s=SKINS.find(x=>x.id===S.skin);return s?s.bonus:0;}
+  function globalMult(){return (1+S.boosts.mult*0.10)*(1+S.coreLevel*0.15)*(1+S.prestige*0.10)*(1+S.perks.greed*0.05)*(1+skinBonus());}
   function comboMult(){return 1+Math.min(combo,100)*0.01;}
   function boostMult(){return Date.now()<boostEnd?5:1;}
+  function critChance(){return S.perks.crit*0.04;}
+  function minerLevels(){let s=0;for(const k in S.miners)s+=S.miners[k];return s;}
   function incomePerSec(){let b=0;for(const m of MINERS)b+=(S.miners[m.id]||0)*m.inc;return b*globalMult();}
   function perTap(){return S.tapPower*globalMult()*comboMult()*boostMult();}
-  const minerCost=m=>Math.floor(m.base*Math.pow(MINER_GROWTH,S.miners[m.id]||0));
+  const minerCost=m=>Math.floor(m.base*Math.pow(MG,S.miners[m.id]||0));
   const boostCost=b=>Math.floor(b.base*Math.pow(b.growth,S.boosts[b.id]));
+  const perkCost=p=>S.perks[p.id]+1; // skill points
   const prestigeGain=()=>Math.floor(Math.sqrt(S.total/5e5));
 
   function earn(a){S.score+=a;S.total+=a;
     while(S.coreLevel<LEVELS.length-1&&S.total>=LEVELS[S.coreLevel+1].need){
-      S.coreLevel++;const L=LEVELS[S.coreLevel];
-      document.documentElement.style.setProperty('--core',L.c);$('glyph').innerText=L.g;
-      showToast('🆙 '+L.n+'!\n+15% к доходу');haptic('heavy');
+      S.coreLevel++;S.gems+=1;S.sp+=1;const L=LEVELS[S.coreLevel];
+      if(S.skin==='default'){document.documentElement.style.setProperty('--core',L.c);$('glyph').innerText=L.g;}
+      showToast('🆙 '+L.n+'\n+15% доход · +1💎 +1🧬');haptic('heavy');
     }}
 
-  // ---- renderers ----
-  function renderMiners(){
-    $('minerList').innerHTML=MINERS.map(m=>{
-      const lv=S.miners[m.id]||0, cost=minerCost(m);
-      const locked=S.total<m.unlock && lv===0;
-      const can=!locked&&S.score>=cost;
-      return `<div class="card${locked?' locked':''}"><div class="ico">${m.ico}</div>
-        <div class="info"><div class="name">${m.name}</div>
-        <div class="inc">${locked?'🔒 откроется при '+fmt(m.unlock):'+'+fmt(m.inc*globalMult())+' /сек за ур.'}</div></div>
-        ${locked?'':`<button class="buy" data-mid="${m.id}" ${can?'':'disabled'}>🪙 ${fmt(cost)}<span class="lvl">ур. ${lv}</span></button>`}</div>`;
-    }).join('');
-    $('minerList').querySelectorAll('.buy').forEach(b=>b.onclick=()=>buyMiner(b.dataset.mid));
-  }
-  function renderBoosts(){
-    $('boostList').innerHTML=BOOSTS.map(b=>{
-      const cost=boostCost(b),can=S.score>=cost;
-      return `<div class="card"><div class="ico">${b.ico}</div>
-        <div class="info"><div class="name">${b.name}</div><div class="desc">${b.desc}</div></div>
-        <button class="buy" data-bid="${b.id}" ${can?'':'disabled'}>🪙 ${fmt(cost)}<span class="lvl">ур. ${S.boosts[b.id]}</span></button></div>`;
-    }).join('');
-    $('boostList').querySelectorAll('.buy').forEach(x=>x.onclick=()=>buyBoost(x.dataset.bid));
-  }
-  function renderTasks(){
-    let avail=0;
-    $('taskList').innerHTML=TASKS.map(t=>{
-      const done=t.chk(S),claimed=S.tasksClaimed[t.id];
-      let st;
-      if(claimed) st='<span class="st got">✓ Готово</span>';
-      else if(done){st=`<span class="st claim" data-tid="${t.id}">Забрать</span>`;avail++;}
-      else st='<span class="st wait">…</span>';
-      return `<div class="task${done?' done':''}"><div class="ico">${t.ico}</div>
-        <div class="info"><div class="name">${t.name}</div><div class="rw">🪙 +${fmt(t.rw)}</div></div>${st}</div>`;
-    }).join('');
-    $('taskList').querySelectorAll('.claim').forEach(b=>b.onclick=()=>claimTask(b.dataset.tid));
-    const bd=$('taskBadge');
-    const daily=Date.now()-S.lastDaily>=DAY?1:0;
-    if(avail+daily>0){bd.style.display='';bd.innerText=avail+daily;}else bd.style.display='none';
-    // daily box
-    const ready=Date.now()-S.lastDaily>=DAY;
-    const h=Math.ceil((DAY-(Date.now()-S.lastDaily))/3600000);
-    $('dailyBox').innerHTML=`<div class="task${ready?' done':''}"><div class="ico">🎁</div>
-      <div class="info"><div class="name">Ежедневный вход</div><div class="rw">Стрик: ${S.dailyStreak} дн.</div></div>
+  // renderers
+  function renderMiners(){$('minerList').innerHTML=MINERS.map(m=>{
+    const lv=S.miners[m.id]||0,cost=minerCost(m),locked=S.total<m.unlock&&lv===0,can=!locked&&S.score>=cost;
+    return `<div class="card${locked?' locked':''}"><div class="ico">${m.ico}</div><div class="info">
+      <div class="name">${m.name}</div><div class="inc">${locked?'🔒 откроется при '+fmt(m.unlock):'+'+fmt(m.inc*globalMult())+' /сек · ур.'}</div></div>
+      ${locked?'':`<button class="buy" data-mid="${m.id}" ${can?'':'disabled'}>🪙 ${fmt(cost)}<span class="lvl">ур. ${lv}</span></button>`}</div>`;
+  }).join('');$('minerList').querySelectorAll('.buy').forEach(b=>b.onclick=()=>buyMiner(b.dataset.mid));}
+
+  function renderBoosts(){$('boostList').innerHTML=BOOSTS.map(b=>{
+    const cost=boostCost(b),can=S.score>=cost;
+    return `<div class="card"><div class="ico">${b.ico}</div><div class="info"><div class="name">${b.name}</div><div class="desc">${b.desc}</div></div>
+      <button class="buy" data-bid="${b.id}" ${can?'':'disabled'}>🪙 ${fmt(cost)}<span class="lvl">ур. ${S.boosts[b.id]}</span></button></div>`;
+  }).join('');$('boostList').querySelectorAll('.buy').forEach(x=>x.onclick=()=>buyBoost(x.dataset.bid));}
+
+  function renderPerks(){$('perkList').innerHTML=PERKS.map(p=>{
+    const lv=S.perks[p.id],cost=perkCost(p),max=lv>=p.max,can=!max&&S.sp>=cost;
+    return `<div class="card"><div class="ico">${p.ico}</div><div class="info"><div class="name">${p.name} <span style="color:var(--muted);font-size:11px">${lv}/${p.max}</span></div><div class="desc">${p.desc}</div></div>
+      <button class="buy sp" data-pid="${p.id}" ${can?'':'disabled'}>${max?'МАКС':'🧬 '+cost}</button></div>`;
+  }).join('');$('perkList').querySelectorAll('.buy').forEach(x=>x.onclick=()=>buyPerk(x.dataset.pid));}
+
+  function renderSkins(){$('skinList').innerHTML=SKINS.map(s=>{
+    const own=S.ownedSkins.includes(s.id),sel=S.skin===s.id;
+    let btn;
+    if(sel)btn='<button class="buy sel" disabled>Выбран</button>';
+    else if(own)btn=`<button class="buy own" data-skin="${s.id}">Надеть</button>`;
+    else btn=`<button class="buy gem" data-skinbuy="${s.id}" ${S.gems>=s.cost?'':'disabled'}>💎 ${s.cost}</button>`;
+    return `<div class="card"><div class="ico">${s.g}</div><div class="info"><div class="name">${s.name}</div>
+      <div class="desc">${s.bonus>0?'+'+(s.bonus*100)+'% к доходу':'базовый вид'}</div></div>${btn}</div>`;
+  }).join('');
+    $('skinList').querySelectorAll('[data-skin]').forEach(b=>b.onclick=()=>setSkin(b.dataset.skin));
+    $('skinList').querySelectorAll('[data-skinbuy]').forEach(b=>b.onclick=()=>buySkin(b.dataset.skinbuy));}
+
+  function renderTasks(){let avail=0;
+    $('taskList').innerHTML=TASKS.map(t=>{const done=t.chk(S),cl=S.tasksClaimed[t.id];let st;
+      if(cl)st='<span class="st got">✓</span>';else if(done){st=`<span class="st claim" data-tid="${t.id}">Забрать</span>`;avail++;}else st='<span class="st wait">…</span>';
+      return `<div class="task${done?' done':''}"><div class="ico">${t.ico}</div><div class="info"><div class="name">${t.name}</div><div class="rw">🪙 +${fmt(t.rw)}</div></div>${st}</div>`;
+    }).join('');$('taskList').querySelectorAll('.claim').forEach(b=>b.onclick=()=>claimTask(b.dataset.tid));
+    const ready=Date.now()-S.lastDaily>=DAY,h=Math.ceil((DAY-(Date.now()-S.lastDaily))/3600000);
+    $('dailyBox').innerHTML=`<div class="task${ready?' done':''}"><div class="ico">🎁</div><div class="info"><div class="name">Ежедневный вход</div><div class="rw">Стрик: ${S.dailyStreak} дн.</div></div>
       ${ready?'<span class="st claim" id="dailyClaim">Забрать</span>':'<span class="st wait">'+h+'ч</span>'}</div>`;
     if(ready)$('dailyClaim').onclick=claimDaily;
-  }
-  function renderProfile(){
-    $('profBox').innerHTML=[
-      ['Всего заработано',fmt(S.total)],
-      ['Сделано тапов',fmt(S.taps)],
-      ['Уровень ядра',(S.coreLevel+1)+' · '+LEVELS[S.coreLevel].n],
-      ['Доход в секунду',fmt(incomePerSec())],
-      ['Сила тапа',fmt(perTap())],
-      ['Кристаллы престижа','💎 '+S.prestige+' (+'+(S.prestige*10)+'%)'],
-    ].map(r=>`<div class="pstat"><span>${r[0]}</span><b>${r[1]}</b></div>`).join('');
-    const g=prestigeGain(),btn=$('prestigeBtn');
-    btn.disabled=g<1;
-    btn.innerText=g<1?'Перезапуск недоступен':'Перезапуск → +'+g+' 💎';
-    $('prestigeHint').innerText=g<1
-      ?'Накопи больше, чтобы получить кристаллы. Они дают +10% к доходу навсегда и не сгорают при перезапуске.'
-      :'Сбросит баланс, майнеры и бусты, но даст '+g+' кристаллов (+'+(g*10)+'% навсегда). Уровень ядра и задания сохранятся.';
-  }
+    updateBadge(avail+(ready?1:0)+achAvail());}
+  function achAvail(){let n=0;for(const a of ACH)if(a.chk(S)&&!S.achClaimed[a.id])n++;return n;}
+  function renderAch(){$('achList').innerHTML=ACH.map(a=>{const done=a.chk(S),cl=S.achClaimed[a.id];let st;
+    if(cl)st='<span class="st got">✓</span>';else if(done)st=`<span class="st claim" data-aid="${a.id}">Забрать</span>`;else st='<span class="st wait">…</span>';
+    return `<div class="task${done?' done':''}"><div class="ico">${a.ico}</div><div class="info"><div class="name">${a.name}</div><div class="rw g">💎 +${a.gem}</div></div>${st}</div>`;
+  }).join('');$('achList').querySelectorAll('.claim').forEach(b=>b.onclick=()=>claimAch(b.dataset.aid));}
+  function updateBadge(n){const b=$('taskBadge');if(n>0){b.style.display='';b.innerText=n;}else b.style.display='none';}
 
-  function refresh(){
-    $('balance').innerText=fmt(S.score);
-    const inc=incomePerSec();
-    $('rate').innerText=inc>0?'+'+fmt(inc)+' /сек':'';
-    $('lvlTag').innerText=LEVELS[S.coreLevel].n;
-    $('energy').innerText=Math.floor(S.energy);$('maxEnergy').innerText=S.maxEnergy;
-    $('energyBar').style.width=(S.energy/S.maxEnergy*100)+'%';
+  function renderProfile(){$('profBox').innerHTML=[
+    ['Всего заработано',fmt(S.total)],['Сделано тапов',fmt(S.taps)],
+    ['Уровень ядра',(S.coreLevel+1)+' · '+LEVELS[S.coreLevel].n],
+    ['Доход/сек',fmt(incomePerSec())],['Сила тапа',fmt(perTap())],
+    ['Шанс крита',(critChance()*100).toFixed(0)+'%'],
+    ['Кристаллы','💎 '+S.gems],['Очки прокачки','🧬 '+S.sp],
+    ['Престиж','♻️ '+S.prestige+' (+'+(S.prestige*10)+'%)'],
+  ].map(r=>`<div class="pstat"><span>${r[0]}</span><b>${r[1]}</b></div>`).join('');
+    const g=prestigeGain(),btn=$('prestigeBtn');btn.disabled=g<1;
+    btn.innerText=g<1?'Перезапуск недоступен':'♻️ Перезапуск → +'+g+'💎 престижа';
+    $('prestigeHint').innerText=g<1?'Копи дальше: за перезапуск дают кристаллы престижа (+10% к доходу навсегда). Уровень ядра, скины и ачивки сохранятся.'
+      :'Сбросит баланс/майнеры/бусты, но даст '+g+' престижа (+'+(g*10)+'% навсегда). Ядро, скины, перки и ачивки останутся.';}
+
+  function renderFriends(){let uid='';try{uid=tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user&&tg.initDataUnsafe.user.id;}catch(e){}
+    const link='https://t.me/'+BOT_USERNAME+'?startapp=ref_'+(uid||'demo');
+    $('refLink').innerText=link;
+    $('refCount').innerText=tg?'нужен сервер':'—';
+    $('refHint').innerText=tg?'Счётчик друзей и общий рейтинг показываются только с сервером (см. инструкцию). Ссылка-приглашение и бонус новичку работают уже сейчас.'
+      :'Открой игру внутри Telegram, чтобы ссылка стала персональной.';
+    $('copyBtn').onclick=()=>{navigator.clipboard&&navigator.clipboard.writeText(link);haptic('medium');showToast('📋 Ссылка скопирована');};
+    $('shareBtn').onclick=()=>{const u='https://t.me/share/url?url='+encodeURIComponent(link)+'&text='+encodeURIComponent('Залетай в CYBER CORE! Лови 5000 монет на старте 🪙');
+      if(tg&&tg.openTelegramLink)tg.openTelegramLink(u);else window.open(u,'_blank');};}
+
+  function refresh(){$('balance').innerText=fmt(S.score);$('gems').innerText=fmt(S.gems);$('sp').innerText=S.sp;
+    const inc=incomePerSec();$('rate').innerText=inc>0?'+'+fmt(inc)+' /сек':'';$('lvlTag').innerText=LEVELS[S.coreLevel].n;
+    $('energy').innerText=Math.floor(S.energy);$('maxEnergy').innerText=S.maxEnergy;$('energyBar').style.width=(S.energy/S.maxEnergy*100)+'%';
     const L=LEVELS[S.coreLevel],nx=LEVELS[S.coreLevel+1];
     $('lvlBar').style.width=nx?Math.max(0,Math.min(100,(S.total-L.need)/(nx.need-L.need)*100))+'%':'100%';
-    const c=$('combo');
-    if(combo>4){c.classList.add('on');c.innerText='🔥 x'+comboMult().toFixed(2)+'  ('+combo+')';}else c.classList.remove('on');
+    const c=$('combo');if(combo>4){c.classList.add('on');c.innerText='🔥 x'+comboMult().toFixed(2)+' ('+combo+')';}else c.classList.remove('on');
     updateActions();
-    // refresh visible buy buttons cheaply
     document.querySelectorAll('#minerList .buy').forEach(b=>b.disabled=S.score<minerCost(MINERS.find(m=>m.id===b.dataset.mid)));
-    document.querySelectorAll('#boostList .buy').forEach(b=>b.disabled=S.score<boostCost(BOOSTS.find(x=>x.id===b.dataset.bid)));
-  }
+    document.querySelectorAll('#boostList .buy').forEach(b=>b.disabled=S.score<boostCost(BOOSTS.find(x=>x.id===b.dataset.bid)));}
 
-  function updateActions(){
-    const now=Date.now(),bb=$('boost'),bt=$('boostTxt');
-    bb.classList.remove('ready');
+  function updateActions(){const now=Date.now(),bb=$('boost'),bt=$('boostTxt');bb.classList.remove('ready');
     if(now<boostEnd){bb.disabled=true;bt.innerText='x5 '+Math.ceil((boostEnd-now)/1000)+'с';}
     else if(now<boostCd){bb.disabled=true;bt.innerText=Math.ceil((boostCd-now)/1000)+'с';}
     else{bb.disabled=false;bb.classList.add('ready');bt.innerText='Овердрайв';}
     const rb=$('refill'),rt=$('refillTxt');rb.classList.remove('ready');
-    if(now<refillCd){rb.disabled=true;rt.innerText=Math.ceil((refillCd-now)/1000)+'с';}
-    else{rb.disabled=false;rb.classList.add('ready');rt.innerText='Заряд';}
-  }
+    if(now<refillCd){rb.disabled=true;rt.innerText=Math.ceil((refillCd-now)/1000)+'с';}else{rb.disabled=false;rb.classList.add('ready');rt.innerText='Заряд';}}
 
-  // ---- actions ----
-  function buyMiner(id){const m=MINERS.find(x=>x.id===id),cost=minerCost(m);if(S.score<cost)return;
-    S.score-=cost;S.miners[id]=(S.miners[id]||0)+1;haptic('medium');save();renderMiners();refresh();}
-  function buyBoost(id){const b=BOOSTS.find(x=>x.id===id),cost=boostCost(b);if(S.score<cost)return;
-    S.score-=cost;S.boosts[id]++;
-    if(id==='tap')S.tapPower+=1;if(id==='cap')S.maxEnergy+=250;if(id==='rgn')S.energyRegen+=1;
-    haptic('medium');save();renderBoosts();refresh();}
-  function claimTask(id){const t=TASKS.find(x=>x.id===id);if(!t.chk(S)||S.tasksClaimed[id])return;
-    S.tasksClaimed[id]=true;earn(t.rw);haptic('heavy');showToast('✅ +'+fmt(t.rw));save();renderTasks();refresh();}
-  function claimDaily(){if(Date.now()-S.lastDaily<DAY)return;
-    S.dailyStreak=(Date.now()-S.lastDaily<2*DAY)?S.dailyStreak+1:1;S.lastDaily=Date.now();
-    const rw=Math.max(500,Math.floor(incomePerSec()*600))*S.dailyStreak;
-    earn(rw);haptic('heavy');showToast('🎁 +'+fmt(rw)+'\nСтрик: '+S.dailyStreak);save();renderTasks();refresh();}
-  function fireBoost(){if(Date.now()<boostCd)return;boostEnd=Date.now()+BOOST_DUR;boostCd=Date.now()+BOOST_CD;
-    haptic('heavy');showToast('🚀 ОВЕРДРАЙВ x5!');refresh();}
-  function fireRefill(){if(Date.now()<refillCd)return;S.energy=S.maxEnergy;refillCd=Date.now()+REFILL_CD;
-    haptic('heavy');showToast('⚡ Энергия восстановлена!');save();refresh();}
-  function doPrestige(){const g=prestigeGain();if(g<1)return;
-    if(!confirm('Перезапустить? Получишь '+g+' 💎 (+'+(g*10)+'% навсегда). Баланс и майнеры сбросятся.'))return;
-    S.prestige+=g;S.score=0;S.miners={};S.boosts={tap:0,mult:0,cap:0,rgn:0};
-    S.tapPower=1;S.maxEnergy=100;S.energy=100;S.energyRegen=1;
-    haptic('heavy');showToast('💎 +'+g+' кристаллов!');save();renderMiners();renderBoosts();renderProfile();refresh();}
+  // actions
+  function buyMiner(id){const m=MINERS.find(x=>x.id===id),c=minerCost(m);if(S.score<c)return;S.score-=c;S.miners[id]=(S.miners[id]||0)+1;haptic('medium');save();renderMiners();refresh();}
+  function buyBoost(id){const b=BOOSTS.find(x=>x.id===id),c=boostCost(b);if(S.score<c)return;S.score-=c;S.boosts[id]++;
+    if(id==='tap')S.tapPower+=1;if(id==='cap')S.maxEnergy+=250;if(id==='rgn')S.energyRegen+=1;haptic('medium');save();renderBoosts();refresh();}
+  function buyPerk(id){const p=PERKS.find(x=>x.id===id),c=perkCost(p);if(S.sp<c||S.perks[id]>=p.max)return;S.sp-=c;S.perks[id]++;
+    if(id==='eff')S.energyRegen+=2;haptic('medium');save();renderPerks();refresh();}
+  function buySkin(id){const s=SKINS.find(x=>x.id===id);if(S.gems<s.cost||S.ownedSkins.includes(id))return;S.gems-=s.cost;S.ownedSkins.push(id);setSkin(id);haptic('heavy');showToast('🎨 Скин куплен!');renderSkins();}
+  function setSkin(id){S.skin=id;const s=SKINS.find(x=>x.id===id);
+    if(id==='default'){const L=LEVELS[S.coreLevel];document.documentElement.style.setProperty('--core',L.c);$('glyph').innerText=L.g;}
+    else{document.documentElement.style.setProperty('--core',s.c);$('glyph').innerText=s.g;}
+    haptic('light');save();renderSkins();refresh();}
+  function claimTask(id){const t=TASKS.find(x=>x.id===id);if(!t.chk(S)||S.tasksClaimed[id])return;S.tasksClaimed[id]=true;earn(t.rw);haptic('heavy');showToast('✅ +'+fmt(t.rw));save();renderTasks();refresh();}
+  function claimAch(id){const a=ACH.find(x=>x.id===id);if(!a.chk(S)||S.achClaimed[id])return;S.achClaimed[id]=true;S.gems+=a.gem;haptic('heavy');showToast('🏆 +'+a.gem+'💎');save();renderAch();renderTasks();refresh();}
+  function claimDaily(){if(Date.now()-S.lastDaily<DAY)return;S.dailyStreak=(Date.now()-S.lastDaily<2*DAY)?S.dailyStreak+1:1;S.lastDaily=Date.now();
+    const rw=Math.max(500,Math.floor(incomePerSec()*600))*S.dailyStreak;earn(rw);if(S.dailyStreak%5===0){S.gems+=3;showToast('🎁 +'+fmt(rw)+'\n+3💎 за 5 дней!');}else showToast('🎁 +'+fmt(rw)+'\nСтрик: '+S.dailyStreak);haptic('heavy');save();renderTasks();refresh();}
+  function fireBoost(){if(Date.now()<boostCd)return;boostEnd=Date.now()+BOOST_DUR;boostCd=Date.now()+BOOST_CD;haptic('heavy');showToast('🚀 ОВЕРДРАЙВ x5!');refresh();}
+  function fireRefill(){if(Date.now()<refillCd)return;S.energy=S.maxEnergy;refillCd=Date.now()+REFILL_CD;haptic('heavy');showToast('⚡ Энергия восстановлена!');save();refresh();}
+  function doPrestige(){const g=prestigeGain();if(g<1)return;if(!confirm('Перезапуск? +'+g+' престижа (+'+(g*10)+'% навсегда). Баланс и майнеры сбросятся.'))return;
+    S.prestige+=g;S.score=0;S.miners={};S.boosts={tap:0,mult:0,cap:0,rgn:0};S.tapPower=1;S.maxEnergy=100;S.energy=100;S.energyRegen=1+S.perks.eff*2;
+    haptic('heavy');showToast('♻️ +'+g+' престижа!');save();renderMiners();renderBoosts();renderProfile();refresh();}
+  function hardReset(){if(!confirm('Точно сбросить ВЕСЬ прогресс? Это нельзя отменить.'))return;try{localStorage.removeItem('cc3');}catch(e){}location.reload();}
 
   function showToast(m){const t=$('toast');t.innerText=m;t.classList.add('on');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('on'),1600);}
 
-  function tap(e){if(S.energy<1){haptic('rigid');return;}
-    const now=Date.now();combo=(now-lastTap<800)?combo+1:0;lastTap=now;
-    S.energy-=1;S.taps++;const gain=Math.round(perTap());earn(gain);haptic('light');
-    const wrap=$('coreWrap'),f=document.createElement('div');f.className='float';f.innerText='+'+fmt(gain);
-    const r=wrap.getBoundingClientRect();
-    const x=(e.touches?e.touches[0].clientX:e.clientX)-r.left,y=(e.touches?e.touches[0].clientY:e.clientY)-r.top;
+  function tap(e){if(S.energy<1){haptic('rigid');return;}const now=Date.now();combo=(now-lastTap<800)?combo+1:0;lastTap=now;
+    S.energy-=1;S.taps++;let gain=perTap();const crit=Math.random()<critChance();if(crit)gain*=7;if(golden)gain*=3;gain=Math.round(gain);earn(gain);haptic(crit?'heavy':'light');
+    const wrap=$('coreWrap'),f=document.createElement('div');f.className='float'+(crit?' crit':'');f.innerText=(crit?'💥+':'+')+fmt(gain);
+    const r=wrap.getBoundingClientRect();const x=(e.touches?e.touches[0].clientX:e.clientX)-r.left,y=(e.touches?e.touches[0].clientY:e.clientY)-r.top;
     f.style.left=(x-10)+'px';f.style.top=(y-20)+'px';wrap.appendChild(f);setTimeout(()=>f.remove(),900);refresh();}
 
-  // ---- nav ----
-  document.querySelectorAll('.nav button').forEach(btn=>{
-    btn.onclick=()=>{
-      document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('on'));
-      document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-      btn.classList.add('on');$('v-'+btn.dataset.v).classList.add('active');
-      if(btn.dataset.v==='miners')renderMiners();
-      if(btn.dataset.v==='boosts')renderBoosts();
-      if(btn.dataset.v==='tasks')renderTasks();
-      if(btn.dataset.v==='profile')renderProfile();
-      haptic('light');
-    };
-  });
+  // nav + subtabs
+  document.querySelectorAll('.nav button').forEach(btn=>{btn.onclick=()=>{
+    document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('on'));
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+    btn.classList.add('on');$('v-'+btn.dataset.v).classList.add('active');
+    const v=btn.dataset.v;if(v==='miners')renderMiners();if(v==='up'){renderBoosts();renderPerks();renderSkins();}
+    if(v==='tasks'){renderTasks();renderAch();}if(v==='friends')renderFriends();if(v==='profile')renderProfile();haptic('light');};});
+  document.querySelectorAll('[data-su]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-su]').forEach(x=>x.classList.remove('on'));
+    document.querySelectorAll('#v-up .subview').forEach(s=>s.classList.remove('active'));b.classList.add('on');$('su-'+b.dataset.su).classList.add('active');haptic('light');});
+  document.querySelectorAll('[data-su2]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-su2]').forEach(x=>x.classList.remove('on'));
+    document.querySelectorAll('#v-tasks .subview').forEach(s=>s.classList.remove('active'));b.classList.add('on');$('su-'+b.dataset.su2).classList.add('active');haptic('light');});
 
   const core=$('core');
   core.addEventListener('touchstart',e=>{e.preventDefault();tap(e);},{passive:false});
   core.addEventListener('mousedown',e=>{if(!('ontouchstart'in window))tap(e);});
-  $('boost').onclick=fireBoost;$('refill').onclick=fireRefill;$('prestigeBtn').onclick=doPrestige;
+  $('boost').onclick=fireBoost;$('refill').onclick=fireRefill;$('prestigeBtn').onclick=doPrestige;$('resetBtn').onclick=hardReset;
 
-  setInterval(()=>{
-    const inc=incomePerSec();if(inc>0)earn(Math.floor(inc));
+  setInterval(()=>{const inc=incomePerSec();if(inc>0)earn(Math.floor(inc));
+    if(S.perks.auto>0&&S.energy>=S.perks.auto){S.energy-=S.perks.auto;let g=Math.round(perTap()*S.perks.auto/comboMult());earn(g);}
     if(S.energy<S.maxEnergy)S.energy=Math.min(S.maxEnergy,S.energy+S.energyRegen);
     if(combo>0&&Date.now()-lastTap>1000)combo=0;
-    refresh();
-    if($('v-tasks').classList.contains('active'))renderTasks();
-  },1000);
+    // golden core event
+    const now=Date.now();if(!golden&&now>nextGolden){golden=true;goldenEnd=now+8000;$('core').classList.add('golden');showToast('✨ Золотое ядро x3!\nтапай быстрее!');haptic('heavy');}
+    if(golden&&now>goldenEnd){golden=false;$('core').classList.remove('golden');nextGolden=now+60000+Math.random()*60000;}
+    refresh();if($('v-tasks').classList.contains('active'))renderTasks();},1000);
   setInterval(save,5000);window.addEventListener('beforeunload',save);
 
-  document.documentElement.style.setProperty('--core',LEVELS[S.coreLevel].c);
-  $('glyph').innerText=LEVELS[S.coreLevel].g;
-  renderMiners();renderBoosts();renderTasks();renderProfile();refresh();
+  // init visuals
+  if(S.skin!=='default'){const s=SKINS.find(x=>x.id===S.skin);if(s){document.documentElement.style.setProperty('--core',s.c);$('glyph').innerText=s.g;}}
+  else{document.documentElement.style.setProperty('--core',LEVELS[S.coreLevel].c);$('glyph').innerText=LEVELS[S.coreLevel].g;}
+  renderMiners();renderBoosts();renderPerks();renderSkins();renderTasks();renderAch();renderProfile();refresh();
 </script>
 </body>
 </html>
