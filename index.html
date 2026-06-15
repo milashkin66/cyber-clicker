@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyber Clicker</title>
+    <style>
+        body {
+            background-color: #1a1a1a;
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding-top: 50px;
+            margin: 0;
+        }
+        .score {
+            font-size: 40px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #00ffcc;
+        }
+        .coin-btn {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #ffcc00, #ff9900);
+            border: 5px solid #fff;
+            box-shadow: 0 0 20px rgba(255, 153, 0, 0.6);
+            cursor: pointer;
+            font-size: 80px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.1s;
+        }
+        .coin-btn:active {
+            transform: scale(0.92);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="score" id="balance">0</div>
+    <button class="coin-btn" onclick="clickCoin()">🪙</button>
+
+    <script>
+        let score = 0;
+        function clickCoin() {
+            score++;
+            document.getElementById('balance').innerText = score;
+        }
+    </script>
+</body>
+</html>
