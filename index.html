@@ -1,54 +1,277 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cyber Clicker</title>
-    <style>
-        body {
-            background-color: #1a1a1a;
-            color: white;
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding-top: 50px;
-            margin: 0;
-        }
-        .score {
-            font-size: 40px;
-            font-weight: bold;
-            margin-bottom: 20px;
-            color: #00ffcc;
-        }
-        .coin-btn {
-            width: 200px;
-            height: 200px;
-            border-radius: 50%;
-            background: radial-gradient(circle, #ffcc00, #ff9900);
-            border: 5px solid #fff;
-            box-shadow: 0 0 20px rgba(255, 153, 0, 0.6);
-            cursor: pointer;
-            font-size: 80px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            transition: transform 0.1s;
-        }
-        .coin-btn:active {
-            transform: scale(0.92);
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>CYBER CORE</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  :root{
+    --bg:#0a0e1a;
+    --panel:#121829;
+    --panel-line:#1f2a44;
+    --cyan:#00f0ff;
+    --magenta:#ff2d95;
+    --gold:#ffc43d;
+    --text:#e8ecf6;
+    --muted:#6c7794;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;overflow:hidden;}
+  body{
+    background:
+      radial-gradient(120% 80% at 50% -10%, #16203a 0%, var(--bg) 55%),
+      var(--bg);
+    color:var(--text);
+    font-family:'Segoe UI',system-ui,Arial,sans-serif;
+    display:flex;flex-direction:column;
+    height:100dvh;
+    user-select:none;
+  }
+
+  /* ===== Top: balance + rate ===== */
+  .top{padding:18px 20px 6px;text-align:center;}
+  .label{font-size:11px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;}
+  .balance{
+    font-size:46px;font-weight:800;letter-spacing:-1px;
+    color:var(--gold);
+    text-shadow:0 0 24px rgba(255,196,61,.35);
+    display:flex;align-items:center;justify-content:center;gap:8px;line-height:1.1;
+  }
+  .balance .coin{font-size:32px;}
+  .rate{font-size:12px;color:var(--cyan);margin-top:2px;height:16px;}
+
+  /* ===== Core (tap target) ===== */
+  .stage{flex:1;display:flex;align-items:center;justify-content:center;position:relative;}
+  .core-wrap{position:relative;width:240px;height:240px;}
+  .core{
+    position:absolute;inset:0;border-radius:50%;
+    background:radial-gradient(circle at 38% 32%, #6ef7ff, var(--cyan) 38%, #0066aa 78%, #022 100%);
+    box-shadow:
+      0 0 40px rgba(0,240,255,.45),
+      inset 0 0 40px rgba(255,255,255,.25);
+    cursor:pointer;border:none;
+    display:flex;align-items:center;justify-content:center;
+    transition:transform .08s ease;
+    animation:pulse 2.6s ease-in-out infinite;
+  }
+  .core:active{transform:scale(.93);}
+  .core .glyph{font-size:90px;filter:drop-shadow(0 0 10px rgba(0,0,0,.4));}
+  .ring{
+    position:absolute;inset:-14px;border-radius:50%;
+    border:2px dashed rgba(0,240,255,.35);
+    animation:spin 14s linear infinite;
+  }
+  .ring.r2{inset:-28px;border-color:rgba(255,45,149,.3);animation-duration:20s;animation-direction:reverse;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  @keyframes pulse{0%,100%{box-shadow:0 0 40px rgba(0,240,255,.45),inset 0 0 40px rgba(255,255,255,.25);}50%{box-shadow:0 0 70px rgba(0,240,255,.7),inset 0 0 50px rgba(255,255,255,.35);}}
+
+  .float{
+    position:absolute;font-weight:800;font-size:26px;color:var(--gold);
+    text-shadow:0 0 12px rgba(255,196,61,.6);pointer-events:none;
+    animation:floatUp .9s ease-out forwards;
+  }
+  @keyframes floatUp{0%{opacity:1;transform:translateY(0) scale(1);}100%{opacity:0;transform:translateY(-70px) scale(1.3);}}
+
+  /* ===== Energy ===== */
+  .energy{padding:0 20px 8px;}
+  .energy-row{display:flex;justify-content:space-between;align-items:center;font-size:13px;margin-bottom:6px;}
+  .energy-val{color:var(--cyan);font-weight:700;}
+  .bar{height:10px;border-radius:6px;background:var(--panel-line);overflow:hidden;}
+  .bar-fill{height:100%;width:100%;border-radius:6px;
+    background:linear-gradient(90deg,var(--magenta),var(--cyan));
+    transition:width .2s ease;}
+
+  /* ===== Shop ===== */
+  .shop{
+    background:var(--panel);border-top:1px solid var(--panel-line);
+    border-radius:20px 20px 0 0;padding:14px 16px 22px;
+    box-shadow:0 -10px 30px rgba(0,0,0,.4);
+  }
+  .shop h2{margin:0 0 10px;font-size:12px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;}
+  .upg{
+    display:flex;align-items:center;gap:12px;
+    background:#0e1424;border:1px solid var(--panel-line);
+    border-radius:14px;padding:11px 13px;margin-bottom:9px;
+    transition:border-color .15s;
+  }
+  .upg .ico{font-size:26px;width:40px;text-align:center;}
+  .upg .info{flex:1;min-width:0;}
+  .upg .name{font-weight:700;font-size:15px;}
+  .upg .desc{font-size:11px;color:var(--muted);margin-top:1px;}
+  .buy{
+    border:none;border-radius:10px;padding:9px 14px;font-weight:800;font-size:13px;
+    background:linear-gradient(135deg,var(--gold),#ff9900);color:#1a1208;
+    cursor:pointer;white-space:nowrap;transition:transform .1s,filter .15s;
+  }
+  .buy:active{transform:scale(.94);}
+  .buy:disabled{background:#222b40;color:var(--muted);cursor:not-allowed;}
+  .buy .lvl{display:block;font-size:9px;opacity:.7;font-weight:600;}
+</style>
 </head>
 <body>
 
-    <div class="score" id="balance">0</div>
-    <button class="coin-btn" onclick="clickCoin()">🪙</button>
+  <div class="top">
+    <div class="label">Баланс данных</div>
+    <div class="balance"><span class="coin">🪙</span><span id="balance">0</span></div>
+    <div class="rate" id="rate"></div>
+  </div>
 
-    <script>
-        let score = 0;
-        function clickCoin() {
-            score++;
-            document.getElementById('balance').innerText = score;
-        }
-    </script>
+  <div class="stage">
+    <div class="core-wrap" id="coreWrap">
+      <div class="ring"></div>
+      <div class="ring r2"></div>
+      <button class="core" id="core"><span class="glyph">⚛️</span></button>
+    </div>
+  </div>
+
+  <div class="energy">
+    <div class="energy-row">
+      <span>⚡ Энергия</span>
+      <span class="energy-val"><span id="energy">1000</span> / <span id="maxEnergy">1000</span></span>
+    </div>
+    <div class="bar"><div class="bar-fill" id="energyBar"></div></div>
+  </div>
+
+  <div class="shop">
+    <h2>Улучшения</h2>
+    <div id="shopList"></div>
+  </div>
+
+<script>
+  // ---- Telegram WebApp ----
+  const tg = window.Telegram && window.Telegram.WebApp;
+  if (tg) { tg.ready(); tg.expand(); }
+  function haptic(t){ try{ tg && tg.HapticFeedback && tg.HapticFeedback.impactOccurred(t); }catch(e){} }
+
+  // ---- Safe storage (works in preview too) ----
+  const mem = {};
+  const store = {
+    get(k){ try{ return localStorage.getItem(k); }catch(e){ return mem[k] ?? null; } },
+    set(k,v){ try{ localStorage.setItem(k,v); }catch(e){ mem[k]=v; } }
+  };
+
+  // ---- Upgrades definition ----
+  const UPGRADES = [
+    { id:'tap',  ico:'👆', name:'Сила тапа',   desc:'+1 к монетам за тап',          base:25,  growth:1.5, effect:1 },
+    { id:'auto', ico:'🤖', name:'Авто-майнер', desc:'+1 монета в секунду',          base:100, growth:1.6, effect:1 },
+    { id:'nrg',  ico:'🔋', name:'Ёмкость',     desc:'+500 к макс. энергии',          base:150, growth:1.7, effect:500 },
+    { id:'rgn',  ico:'♻️', name:'Реген',       desc:'+1 к восстановлению энергии',   base:200, growth:1.8, effect:1 },
+  ];
+
+  // ---- State ----
+  const S = {
+    score:0, tapPower:1, autoRate:0,
+    energy:1000, maxEnergy:1000, energyRegen:1,
+    levels:{ tap:0, auto:0, nrg:0, rgn:0 }
+  };
+
+  // ---- Load ----
+  (function load(){
+    const raw = store.get('cybercore');
+    if(!raw) return;
+    try{
+      const d = JSON.parse(raw);
+      Object.assign(S, d);
+      // offline auto-mining
+      if(d.t){
+        const secs = Math.min((Date.now()-d.t)/1000, 3*3600); // cap 3h
+        S.score += Math.floor(S.autoRate * secs);
+      }
+    }catch(e){}
+  })();
+
+  function save(){
+    store.set('cybercore', JSON.stringify({...S, t:Date.now()}));
+  }
+
+  // ---- Helpers ----
+  const $ = id => document.getElementById(id);
+  const fmt = n => n>=1e6 ? (n/1e6).toFixed(2)+'M' : n>=1e3 ? (n/1e3).toFixed(1)+'K' : Math.floor(n);
+  const costOf = u => Math.floor(u.base * Math.pow(u.growth, S.levels[u.id]));
+
+  // ---- Render ----
+  function renderShop(){
+    $('shopList').innerHTML = UPGRADES.map(u=>{
+      const cost = costOf(u);
+      const can = S.score >= cost;
+      return `<div class="upg">
+        <div class="ico">${u.ico}</div>
+        <div class="info">
+          <div class="name">${u.name}</div>
+          <div class="desc">${u.desc}</div>
+        </div>
+        <button class="buy" data-id="${u.id}" ${can?'':'disabled'}>
+          🪙 ${fmt(cost)}<span class="lvl">ур. ${S.levels[u.id]}</span>
+        </button>
+      </div>`;
+    }).join('');
+    $('shopList').querySelectorAll('.buy').forEach(b=>{
+      b.onclick = ()=> buy(b.dataset.id);
+    });
+  }
+
+  function refresh(){
+    $('balance').innerText = fmt(S.score);
+    $('rate').innerText = S.autoRate>0 ? '+'+fmt(S.autoRate)+' / сек' : '';
+    $('energy').innerText = Math.floor(S.energy);
+    $('maxEnergy').innerText = S.maxEnergy;
+    $('energyBar').style.width = (S.energy/S.maxEnergy*100)+'%';
+    // update only buy buttons enable state cheaply
+    $('shopList').querySelectorAll('.buy').forEach(b=>{
+      b.disabled = S.score < costOf(UPGRADES.find(u=>u.id===b.dataset.id));
+    });
+  }
+
+  // ---- Actions ----
+  function buy(id){
+    const u = UPGRADES.find(x=>x.id===id);
+    const cost = costOf(u);
+    if(S.score < cost) return;
+    S.score -= cost;
+    S.levels[id]++;
+    if(id==='tap') S.tapPower += u.effect;
+    if(id==='auto') S.autoRate += u.effect;
+    if(id==='nrg') S.maxEnergy += u.effect;
+    if(id==='rgn') S.energyRegen += u.effect;
+    haptic('medium'); save(); renderShop(); refresh();
+  }
+
+  function tap(e){
+    if(S.energy < 1) { haptic('rigid'); return; }
+    S.energy -= 1;
+    S.score += S.tapPower;
+    haptic('light');
+    // floating number
+    const wrap = $('coreWrap');
+    const f = document.createElement('div');
+    f.className='float'; f.innerText='+'+S.tapPower;
+    const r = wrap.getBoundingClientRect();
+    const x = (e.touches?e.touches[0].clientX:e.clientX) - r.left;
+    const y = (e.touches?e.touches[0].clientY:e.clientY) - r.top;
+    f.style.left=(x-10)+'px'; f.style.top=(y-20)+'px';
+    wrap.appendChild(f);
+    setTimeout(()=>f.remove(),900);
+    refresh();
+  }
+
+  const core = $('core');
+  core.addEventListener('touchstart', e=>{ e.preventDefault(); tap(e); }, {passive:false});
+  core.addEventListener('mousedown', e=>{ if(!('ontouchstart'in window)) tap(e); });
+
+  // ---- Game loop (1s tick) ----
+  setInterval(()=>{
+    if(S.autoRate>0) S.score += S.autoRate;
+    if(S.energy < S.maxEnergy) S.energy = Math.min(S.maxEnergy, S.energy + S.energyRegen);
+    refresh();
+  }, 1000);
+
+  setInterval(save, 5000);
+  window.addEventListener('beforeunload', save);
+
+  // ---- Init ----
+  renderShop();
+  refresh();
+</script>
 </body>
 </html>
